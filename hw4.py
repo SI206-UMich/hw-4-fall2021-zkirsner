@@ -28,7 +28,12 @@ class Customer:
     # Submit_order takes a cashier, a stall and an amount as parameters, 
     # it deducts the amount from the customer’s wallet and calls the receive_payment method on the cashier object
     def submit_order(self, cashier, stall, amount): 
-        pass
+        self.amount = amount
+        self.cashier = cashier
+        self.stall = stall 
+        for money in self.amount:
+            self.receive_payment(cashier)
+        
 
     # The __str__ method prints the customer's information.    
     def __str__(self):
@@ -71,8 +76,29 @@ class Cashier:
 
 ## Complete the Stall class here following the instructions in HW_4_instructions_rubric
 class Stall:
-    
-    pass
+    def __init__(self, food_name, inventory, cost = 7, earnings = 0):
+        self.food_name = food_name
+        self.inventory = inventory
+        self.cost = cost
+        self.earnings = earnings
+    def process_order(self, food_name, quantity):
+        self.quantity = quantity
+    def has_item(self, food_name, quantity):
+        if self.quantity >= self.inventory:
+            return True
+        else:
+            return False
+    def stock_up(self, food_name, quantity):
+        self.inventory = {}
+        if food_name in self.inventory:
+            self.quantity += 1
+        else:
+            self.inventory[food_name] = quantity
+    def compute_cost(self, quantity):
+        order = quantity * self.cost
+        return order
+    def __str__(self):
+        return "Hello, we are " + self.food_name + ". This is the current menu: " + list(self.inventory) + ". We charge " + self.cost + "per item. We have " + self.earnings + "in total."
 
 
 class TestAllMethods(unittest.TestCase):
@@ -177,7 +203,27 @@ class TestAllMethods(unittest.TestCase):
         pass
     
 ### Write main function
-def main():
+def main(self):
+    inventory_dict = {}
+    inventory_dict["Cheese"] = 5
+    inventory_dict["Milk"] = 6
+    inventory_dict["Bread"] = 7
+    Customer("Brenda", wallet = 200)
+    Customer("Warren", wallet = 1500)
+    Customer("Ryan", wallet = 500)
+    Stall("Milk", 6, cost = 3)
+    Stall("Cheese", 5, cost = 2)
+    Cashier("Michael", directory = [2, 4, 6])
+    Cashier("Miranda", directory = [1, 3, 5])
+    validate_order()
+    validate_order()
+    validate_order()
+    validate_order()
+
+
+
+
+
     #Create different objects 
 
     #Try all cases in the validate_order function
