@@ -29,7 +29,7 @@ class Customer:
     # it deducts the amount from the customer’s wallet and calls the receive_payment method on the cashier object
     def submit_order(self, cashier, stall, amount): 
         self.wallet = self.wallet - amount 
-        Cashier.receive_payment(cashier)
+        Cashier.receive_payment(cashier, stall, amount)
         
 
     # The __str__ method prints the customer's information.    
@@ -78,23 +78,22 @@ class Stall:
         self.inventory = inventory
         self.cost = cost
         self.earnings = earnings
-    def process_order(self, food_name, quantity):
-        if self.has_item(food_name, quantity) == True:
-            self.inventory()[food_name] -= quantity
-        else:
-            return "Order unable to process"
+    def process_order(self, item_name, quantity):
+        while self.has_item(item_name, quantity) == True:
+            self.inventory[item_name] -= quantity
+            self.earnings += self.compute_cost(quantity)
 
-    def has_item(self, food_name, quantity):
+    def has_item(self, item_name, quantity):
         for l,m in self.inventory.items():
-            if l == food_name and m >= quantity:
+            if l == item_name and m >= quantity:
                 return True
             else:
                 return False
-    def stock_up(self, food_name, quantity):
-        if food_name in self.inventory.keys():
-            self.inventory[food_name] + quantity
+    def stock_up(self, item_name, quantity):
+        if item_name in self.inventory.keys():
+            self.inventory[item_name] + quantity
         else:
-            self.inventory[food_name] = quantity 
+            self.inventory[item_name] = quantity 
     def compute_cost(self, quantity):
         earnings = quantity * self.cost
         return earnings
@@ -205,19 +204,18 @@ class TestAllMethods(unittest.TestCase):
     
 ### Write main function
 def main():
-    inventory_dict = {}
-    inventory_dict2 = {}
-    inventory_dict["Cheese"] = 5
-    inventory_dict["Milk"] = 6
-    inventory_dict["Bread"] = 7
-    inventory_dict2["Carrots"] = 8
-    inventory_dict2["Bananas"] = 9
-    inventory_dict2["Apples"] = 10
+    inventory_dict = {"Cheese":5, "Milk":6, "Bread":7}
+    inventory_dict2 = {"Carrots":8, "Bananas":9, "Apples": 10}
+    #inventory_dict["Milk"] = 6
+    #inventory_dict["Bread"] = 7
+    #inventory_dict2["Carrots"] = 8
+    #inventory_dict2["Bananas"] = 9
+    #inventory_dict2["Apples"] = 10
     c1 = Customer("Brenda", wallet = 5)
     c2 = Customer("Warren", wallet = 1500)
     c3 = Customer("Ryan", wallet = 500)
-    s1 = Stall("Stall 1", 6, cost = 3)
-    s2 = Stall("Stall 2", 5, cost = 2)
+    s1 = Stall("Stall 1", inventory_dict, cost = 3, earnings = 0)
+    s2 = Stall("Stall 2", inventory_dict2, cost = 2, earnings = 0)
     ca1 = Cashier("Michael", directory = [s1])
     ca2 = Cashier("Miranda", directory = [s2])
     Customer.validate_order(c3, ca1, s2, "Cheese", 4)
@@ -252,7 +250,6 @@ def main():
     
     #case 4: the customer successfully places an order
 
-    pass
 
 if __name__ == "__main__":
 	main()
