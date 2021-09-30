@@ -28,11 +28,8 @@ class Customer:
     # Submit_order takes a cashier, a stall and an amount as parameters, 
     # it deducts the amount from the customer’s wallet and calls the receive_payment method on the cashier object
     def submit_order(self, cashier, stall, amount): 
-        self.amount = amount
-        self.cashier = cashier
-        self.stall = stall 
-        for money in self.amount:
-            self.receive_payment(cashier)
+        self.wallet = self.wallet - amount 
+        Cashier.receive_payment(cashier)
         
 
     # The __str__ method prints the customer's information.    
@@ -76,29 +73,33 @@ class Cashier:
 
 ## Complete the Stall class here following the instructions in HW_4_instructions_rubric
 class Stall:
-    def __init__(self, food_name, inventory, cost = 7, earnings = 0):
-        self.food_name = food_name
+    def __init__(self, name, inventory, cost = 7, earnings = 0):
+        self.name = name
         self.inventory = inventory
         self.cost = cost
         self.earnings = earnings
     def process_order(self, food_name, quantity):
-        self.quantity = quantity
+        if self.has_item(food_name, quantity) == True:
+            self.inventory()[food_name] -= quantity
+        else:
+            return "Order unable to process"
+
     def has_item(self, food_name, quantity):
-        if self.quantity >= self.inventory:
-            return True
-        else:
-            return False
+        for l,m in self.inventory.items():
+            if l == food_name and m >= quantity:
+                return True
+            else:
+                return False
     def stock_up(self, food_name, quantity):
-        self.inventory = {}
-        if food_name in self.inventory:
-            self.quantity += 1
+        if food_name in self.inventory.keys():
+            self.inventory[food_name] + quantity
         else:
-            self.inventory[food_name] = quantity
+            self.inventory[food_name] = quantity 
     def compute_cost(self, quantity):
-        order = quantity * self.cost
-        return order
+        earnings = quantity * self.cost
+        return earnings
     def __str__(self):
-        return "Hello, we are " + self.food_name + ". This is the current menu: " + list(self.inventory) + ". We charge " + self.cost + "per item. We have " + self.earnings + "in total."
+        return "Hello, we are " + self.name + ". This is the current menu: " + str(list(self.inventory)) + ". We charge " + self.cost + "per item. We have " + self.earnings + "in total."
 
 
 class TestAllMethods(unittest.TestCase):
@@ -203,22 +204,37 @@ class TestAllMethods(unittest.TestCase):
         pass
     
 ### Write main function
-def main(self):
+def main():
     inventory_dict = {}
+    inventory_dict2 = {}
     inventory_dict["Cheese"] = 5
     inventory_dict["Milk"] = 6
     inventory_dict["Bread"] = 7
-    Customer("Brenda", wallet = 200)
-    Customer("Warren", wallet = 1500)
-    Customer("Ryan", wallet = 500)
-    Stall("Milk", 6, cost = 3)
-    Stall("Cheese", 5, cost = 2)
-    Cashier("Michael", directory = [2, 4, 6])
-    Cashier("Miranda", directory = [1, 3, 5])
-    validate_order()
-    validate_order()
-    validate_order()
-    validate_order()
+    inventory_dict2["Carrots"] = 8
+    inventory_dict2["Bananas"] = 9
+    inventory_dict2["Apples"] = 10
+    c1 = Customer("Brenda", wallet = 5)
+    c2 = Customer("Warren", wallet = 1500)
+    c3 = Customer("Ryan", wallet = 500)
+    s1 = Stall("Stall 1", 6, cost = 3)
+    s2 = Stall("Stall 2", 5, cost = 2)
+    ca1 = Cashier("Michael", directory = [s1])
+    ca2 = Cashier("Miranda", directory = [s2])
+    Customer.validate_order(c3, ca1, s2, "Cheese", 4)
+    Customer.validate_order(c2, ca2, s2, "Apples", 15)
+    Customer.validate_order(c1, ca2, s2, "Carrots", 2)
+    Customer.validate_order(c2, ca1, s1, "Bananans", 2)
+    #def validate_order(self, cashier, stall, item_name, quantity):
+        #if not(cashier.has_stall(stall)):
+            #print("Sorry, we don't have that vendor stall. Please try a different one.")
+        #elif not(stall.has_item(item_name, quantity)):  
+            #print("Our stall has run out of " + item_name + " :( Please try a different stall!")
+        #elif self.wallet < stall.compute_cost(quantity): 
+            #print("Don't have enough money for that :( Please reload more money!")
+        #else:
+            #bill = cashier.place_order(stall, item_name, quantity) 
+            #self.submit_order(cashier, stall, bill) 
+    
 
 
 
