@@ -1,4 +1,4 @@
-
+# Worked collaboratively with Toby and Luke on this assignment
 import unittest
 
 # The Customer class
@@ -90,10 +90,11 @@ class Stall:
             else:
                 return False
     def stock_up(self, item_name, quantity):
-        if item_name in self.inventory.keys():
-            self.inventory[item_name] + quantity
-        else:
-            self.inventory[item_name] = quantity 
+        for l, m in self.inventory.items():
+            if l == item_name:
+                self.inventory[item_name] += quantity
+            else:
+                self.inventory[item_name] = quantity 
     def compute_cost(self, quantity):
         earnings = quantity * self.cost
         return earnings
@@ -173,55 +174,65 @@ class TestAllMethods(unittest.TestCase):
     def test_compute_cost(self):
         #what's wrong with the following statements?
         #can you correct them?
-        self.assertEqual(self.s1.compute_cost(self.s1,5), 51)
-        self.assertEqual(self.s3.compute_cost(self.s3,6), 45)
+        self.assertEqual(self.s1.compute_cost(5), 50) 
+        self.assertEqual(self.s3.compute_cost(6), 42) 
+        #self.assertEqual(self.s1.compute_cost(self.s1,5), 51)
+        #self.assertEqual(self.s3.compute_cost(self.s3,6), 45)
 
 	# Check that the stall can properly see when it is empty
     def test_has_item(self):
         # Set up to run test cases
-
         # Test to see if has_item returns True when a stall has enough items left
         # Please follow the instructions below to create three different kinds of test cases 
         # Test case 1: the stall does not have this food item: 
-        
+        self.assertFalse(self.s1.has_item("Hot Dog", 1))
         # Test case 2: the stall does not have enough food item: 
-        
+        self.assertFalse(self.s1.has_item("Taco", 90))
         # Test case 3: the stall has the food item of the certain quantity: 
-        pass
+        self.assertTrue(self.s1.has_item("Burger", 1))
 
 	# Test validate order
     def test_validate_order(self):
 		# case 1: test if a customer doesn't have enough money in their wallet to order
-
+        self.f1.validate_order(self.c1, self.s1, "Taco", 11)
 		# case 2: test if the stall doesn't have enough food left in stock
-
+        self.f2.validate_order(self.c1, self.s1, "Taco", 63)
 		# case 3: check if the cashier can order item from that stall
-        pass
+        self.f1.validate_order(self.c1, self.s1, "Burger", 1)
+        
 
     # Test if a customer can add money to their wallet
     def test_reload_money(self):
-        pass
+        self.f1.reload_money(45)
+        self.assertEqual(self.f1.wallet, 145)
     
 ### Write main function
 def main():
     inventory_dict = {"Cheese":5, "Milk":6, "Bread":7}
     inventory_dict2 = {"Carrots":8, "Bananas":9, "Apples": 10}
-    #inventory_dict["Milk"] = 6
-    #inventory_dict["Bread"] = 7
-    #inventory_dict2["Carrots"] = 8
-    #inventory_dict2["Bananas"] = 9
-    #inventory_dict2["Apples"] = 10
     c1 = Customer("Brenda", wallet = 5)
-    c2 = Customer("Warren", wallet = 1500)
-    c3 = Customer("Ryan", wallet = 500)
+    c2 = Customer("Warren", wallet = 50)
+    c3 = Customer("Ryan", wallet = 60)
     s1 = Stall("Stall 1", inventory_dict, cost = 3, earnings = 0)
     s2 = Stall("Stall 2", inventory_dict2, cost = 2, earnings = 0)
     ca1 = Cashier("Michael", directory = [s1])
     ca2 = Cashier("Miranda", directory = [s2])
+    # dont have the vendor stall
     Customer.validate_order(c3, ca1, s2, "Cheese", 4)
-    Customer.validate_order(c2, ca2, s2, "Apples", 15)
-    Customer.validate_order(c1, ca2, s2, "Carrots", 2)
-    Customer.validate_order(c2, ca1, s1, "Bananans", 2)
+    Customer.validate_order(c2, ca2, s1, "Apples", 4)
+    Customer.validate_order(c1, ca1, s2, "Bread", 4)
+    # stall is out of food
+    Customer.validate_order(c1, ca2, s2, "Apples", 15)
+    Customer.validate_order(c2, ca1, s1, "Carrots", 15)
+    Customer.validate_order(c3, ca2, s2, "Milk", 15)
+    # customer doesn't have enough money
+    Customer.validate_order(c1, ca1, s1, "Carrots", 2)
+    Customer.validate_order(c2, ca2, s2, "Apples", 8)
+    Customer.validate_order(c3, ca1, s1, "Bananas", 9)
+    #everything works 
+    Customer.validate_order(c1, ca2, s2, "Bananas", 2)
+    Customer.validate_order(c2, ca1, s1, "Bananas", 2)
+    Customer.validate_order(c3, ca2, s2, "Bananas", 2)
     #def validate_order(self, cashier, stall, item_name, quantity):
         #if not(cashier.has_stall(stall)):
             #print("Sorry, we don't have that vendor stall. Please try a different one.")
